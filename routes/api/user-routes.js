@@ -5,7 +5,7 @@ const {
     createUser,
     updateUser,
     deleteUser
-  } = require('../../controllers/Users-controller');
+  } = require('../../controllers/user-controller');
   
 //Set up GET all and Post at /api/social-network
 
