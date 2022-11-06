@@ -13,39 +13,42 @@ const UserSchema = new Schema(
         type: String,
         required: true,
         unique :true,
+        match: /.+\@.+\..+/
     },
-    thoughts: {
+   
         thoughts: [
             {
-                ref:'thoughts'
+                type: Schema.Types.ObjectId,
+                ref:'Thought'
             }
-        ]
-    },
-    Friend
+        ],
+   
+    
+        friends: [
+            {
+            type: Schema.Types.ObjectId,
+            ref:'User'
+            }
+        ],
+    
+        
 },
+{
+    toJSON: {
+      virtuals: true,
+      getters: true
+    },
+    }
 );
-   //creates the pizza model using the UserSchema 
-const User = model('User', UserSchema);
 
+UserSchema.virtual('friendCount').get(function() {
+    return this.friends.length
+  });
+
+
+   //creates the user model using the UserSchema 
+const User = model('User', UserSchema);
+//exports the user model
 module.exports = User;
  
-//  username
-
-//  String
-//  Unique
-//  Required
-//  Trimmed
-
-//  email
- 
-//  String
-//  Required
-//  Unique
-//  Must match a valid email address (look into Mongoose's matching validation)
-
-//  thoughts
- 
-//  Array of _id values referencing the Thought model
-
-//  friends
 
