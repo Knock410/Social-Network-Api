@@ -1,11 +1,12 @@
-const { User, Thought } = require("../models");
+const { User } = require("../models");
 
 const userController = {
   //get all users
   getAllUsers(req, res) {
     User.find({})
-      .then((dbUserData) => res.json(dbUserData))
-      .catch((err) => {
+      .select('-__v')
+      .then(dbUserData => res.json(dbUserData))
+      .catch(err => {
         console.log(err);
         res.sendStatus(400);
       });
@@ -50,6 +51,35 @@ const userController = {
       .then((dbUserData) => res.json(dbUserData))
       .catch((err) => res.json(err));
   },
+  addFriend({ params }, res) {
+    User.findOneAndUpdate(
+        //targets user by id
+        { _id: params.userId },
+        //adds friend to the friend array in the user model
+        { $addToSet: { friends: params.friendId } },
+        { new: true, runValidators: true }
+    )
+        .then(dbUserData => {
+            console.log(dbUserData);
+            if (!dbUserData) {
+                res.status(404).json({ message: 'User does not exist' });
+                return;
+            }
+            res.json(dbUserData);
+        })
+        .catch(err => res.json(err));
+},
+
+deleteFriend({ params }, res) {
+    User.findOneAndUpdate(
+        { _id: params.userId },
+        //removes friend from friend array in the user model 
+        { $pull: { friends: params.friendId } },
+        { new: true },
+    )
+        .then(dbUserData => res.json(dbUserData))
+        .catch(err => res.json(err));
+}
 };
 
 module.exports = userController;
